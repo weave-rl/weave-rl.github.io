@@ -15,6 +15,16 @@
     .publication-title { font-family: 'Google Sans', sans-serif; }
     .teaser img { border-radius: 6px; }
     .link-block .icon { margin-right: 0.4em; }
+    .link-block { margin: 0 0.5rem; }
+    .deployment-videos video, .deployment-videos img { height: 440px; max-width: 100%; border-radius: 6px; }
+    .deployment-videos { column-gap: 3rem; }
+    .obstacle-videos video, .obstacle-videos img { height: 340px; max-width: 100%; border-radius: 6px; }
+    .obstacle-videos img.rerun-gif { height: 170px; max-height: 170px; }
+    .obstacle-videos { column-gap: 1.5rem; }
+    .collision-avoidance-videos video, .collision-avoidance-videos img { height: 260px; max-width: 100%; border-radius: 6px; }
+    .collision-avoidance-videos video.collision-avoidance-real { height: 340px; }
+    .collision-avoidance-videos img.rerun-cut-gif { height: 180px; max-height: 180px; }
+    .collision-avoidance-videos { column-gap: 1.5rem; }
     footer.footer { padding: 1rem 1.5rem; }
   </style>
 </head>
@@ -49,15 +59,21 @@
       <div class="column has-text-centered">
         <div class="publication-links">
           <span class="link-block">
-            <a class="external-link button is-normal is-rounded is-dark" disabled>
+            <a href="https://arxiv.org/pdf/2609.18685" class="external-link button is-normal is-rounded is-dark">
               <span class="icon"><i class="ai ai-arxiv"></i></span>
-              <span>arXiv (coming soon)</span>
+              <span>arXiv</span>
             </a>
           </span>
           <span class="link-block">
             <a class="external-link button is-normal is-rounded is-dark" disabled>
               <span class="icon"><i class="fab fa-github"></i></span>
               <span>Code (coming soon)</span>
+            </a>
+          </span>
+          <span class="link-block">
+            <a class="external-link button is-normal is-rounded is-dark" disabled>
+              <span class="icon"><i class="fas fa-database"></i></span>
+              <span>Dataset (coming soon)</span>
             </a>
           </span>
         </div>
@@ -70,10 +86,10 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column">
-        <img src="fig/teaser_env.png" alt="Rendered parallel RL kitchen environments">
+        <img src="fig/environments.png" alt="Rendered parallel RL kitchen environments">
       </div>
       <div class="column">
-        <img src="fig/teaser_recon.png" alt="Tensorized surfel reconstruction across parallel environments">
+        <img src="fig/reconstruction.png" alt="Tensorized surfel reconstruction across parallel environments">
       </div>
     </div>
     <div class="content has-text-centered">
@@ -117,9 +133,193 @@
 </section>
 
 <section class="section">
-  <div class="container is-max-desktop has-text-centered">
-    <h2 class="title is-4">More coming soon</h2>
-    <p>Video, method details, results, and BibTeX will be added here.</p>
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h2 class="title is-3">Method</h2>
+      </div>
+    </div>
+    <img src="fig/architecture.png" alt="WeaveRL architecture diagram">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <p>
+            <b>WeaveRL Architecture.</b> At each control step, the policy receives a batch of images from the
+            environment and computes targets for the geometric fabric, which emits joint commands
+            <i>q</i>, <i>q̇</i>. Batched depth frames <i>F</i><sub>t</sub><sup>batched</sup> are fused into
+            surfel maps <i>S</i><sub>t</sub><sup>batched</sup>, which the fabric queries on the next step for
+            collision avoidance. Batched reconstruction across parallel environments enables the same
+            perception–control loop during teacher RL training, student distillation, and deployment.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h2 class="title is-3">Highly Parallel Scene Reconstruction</h2>
+      </div>
+    </div>
+    <div class="columns is-centered">
+      <div class="column" style="max-width: 92%;">
+        <img src="fig/scaling.png" alt="Scaling comparison of nvblox and our batched surfel reconstruction across parallel environments">
+      </div>
+    </div>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <p>
+            <b>Highly parallel scene reconstruction.</b> Scaling comparison of our approach (batched) and
+            <a href="https://arxiv.org/abs/2311.00626">nvblox</a>
+            (non-batched; looped over environments) as the number of parallel environments increases, showing that
+            batched mapping is substantially more efficient at larger environment counts. At 1024 environments,
+            our approach increases throughput by 12x over nvblox (at 1cm voxel size).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h2 class="title is-3">Surfel Fabric for Reactive Obstacle Avoidance</h2>
+      </div>
+    </div>
+    <div class="columns is-centered is-vcentered is-mobile collision-avoidance-videos">
+      <div class="column is-narrow has-text-centered">
+        <video class="collision-avoidance-real" autoplay loop muted playsinline aria-label="Real-robot footage of surfel fabric reacting to dynamically added obstacles, with no policy driving the goal">
+          <source src="fig/collision_avoidance.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="column is-narrow has-text-centered">
+        <img class="rerun-cut-gif" src="fig/collision_reconstruction.gif" alt="Reconstruction view of surfel fabric reacting to dynamically added obstacles, with no policy driving the goal">
+      </div>
+    </div>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <p>
+            <b>Surfel fabric for reactive obstacle avoidance.</b> To showcase the obstacle avoidance
+            capabilities of surfel fabrics, we command a robot arm along a fixed
+            left-to-right trajectory and add obstacles to the scene dynamically (<i>left</i>). The goal pose
+            (shown as coordinate frame) is converted into a collision-avoidant trajectory by repulsive forces
+            (red arrows) from the reconstruction (<i>right</i>).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h2 class="title is-3">Sim2Real Deployment</h2>
+      </div>
+    </div>
+    <div class="columns is-centered is-vcentered is-mobile deployment-videos">
+      <div class="column is-narrow has-text-centered">
+        <video autoplay loop muted playsinline aria-label="Real-robot deployment of Place in Box task">
+          <source src="fig/box_task.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="column is-narrow has-text-centered">
+        <video autoplay loop muted playsinline aria-label="Real-robot deployment of Place in Shelf task">
+          <source src="fig/shelf_task.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <p>
+            <b>Sim2Real deployment.</b> Surfel fabrics successfully zero-shot transfer sim2real on the Place in Box
+            (<i>left</i>) and Place in Shelf (<i>right</i>) tasks. Built-in collision avoidance lets the policy focus on goal reaching.
+            Primitive-based baselines fail on these collision-dense tasks, since learning both obstacle avoidance and
+            goal-directed behavior from sparse rewards is too difficult.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h2 class="title is-3">Robustness to Unseen Obstacles</h2>
+      </div>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <img src="fig/obstacle_robustness.png" alt="Success rate vs obstacle clearance for surfel fabrics, primitive fabrics, and pointcloud observation">
+      </div>
+    </div>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <p>
+            <b>Robustness to an unseen obstacle at test time.</b> Policies are trained on cube pickup (no
+            obstacles), then evaluated with an added cylindrical obstacle at varying clearance from the target
+            object. Primitive policies must generalize from sparse-reward training alone, while our surfel
+            fabric uses an explicit test-time scene representation for collision avoidance, increasing
+            collision-free task completion from 35% to 61% versus primitive fabrics.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="columns is-centered is-vcentered is-mobile obstacle-videos" style="margin-top: 2rem;">
+      <div class="column is-narrow has-text-centered">
+        <video autoplay loop muted playsinline aria-label="Without surfel fabrics: gripper collides with an unseen box">
+          <source src="fig/obstacle_primitive.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="column is-narrow has-text-centered">
+        <video autoplay loop muted playsinline aria-label="With surfel fabrics: task succeeds despite unseen box">
+          <source src="fig/obstacle_surfel.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="column is-narrow has-text-centered">
+        <img class="rerun-gif" src="fig/obstacle_reconstruction.gif" alt="Reconstruction with repulsive forces steering the end-effector goal">
+      </div>
+    </div>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <p>
+            <b>Unseen obstacle at deployment.</b> A cardboard box, absent from training, blocks the path to the
+            target cube. Without surfel fabrics, the gripper collides with the box (<i>left</i>). With surfel
+            fabrics, the task succeeds (<i>middle</i>); the end-effector goal predicted by the policy (shown as
+            coordinate frame) is converted into a collision-avoidant trajectory by repulsive forces (red arrows)
+            from the reconstruction (<i>right</i>).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@misc{steiner2026weaverl,
+      title={WeaveRL: Weaving Reconstruction into Scene-Aware Fabrics for Perceptive Reinforcement Learning},
+      author={Remo Steiner and Vikram Ramasamy and David Tingdahl and Sam Mady and Karl Van Wyk and Nathan Ratliff and David Recasens Lafuente and Soha Pouya and Tuur Stuyck and Alex Millane},
+      year={2026},
+      eprint={2609.18685},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2609.18685},
+}</code></pre>
   </div>
 </section>
 
